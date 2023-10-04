@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from . import production
 from .. import db
-from ..models import Product, ProductionRuns
+from ..models import Product, ProductionRuns, Ingredient
 
 @production.route("/")
 def production_home():
@@ -90,3 +90,41 @@ class ProductionRunsRoutes:
         db.session.delete(run)
         db.session.commit()
         return jsonify({"message": "Run deleted successfully!"})
+    
+
+class IngredientsRoutes:
+
+    @production.post('/ingredients')
+    def new_ingredient():
+        data = request.get_json()
+        if request.method == "POST":
+            ingredient = Ingredient(
+                ingredient_id = data.get("ingredient_id"),
+                ingredient_name = data.get("ingredient_name"),
+                ingredient_measurement = data.get("ingredient_measurement"),
+                ingredient_cost = data.get("ingredient_cost")
+            )
+            db.session.add(ingredient)
+            db.session.commit()
+
+    @production.get('/ingredients')
+    def view_ingredients():
+        ingredients = Ingredient.query.all()
+        ingredients_list = []
+        for ingredient in ingredients:
+            ingredients_list.append(ingredient.to_json())
+        return jsonify(ingredients_list)
+    
+    @production.get('/ingredients/<int:id>')
+    def view_ingredient(id):
+        ingredient = Ingredient.query.get(id)
+        if not ingredient:
+            return jsonify({"message": "Product not found"})
+        return jsonify(ingredient.to_json())
+    
+    @production.delete('/ingredients/<int:id>')
+    def delete_ingredient(id):
+        ingredient = Ingredient.query.get(id)
+        if not ingredient:
+            return jsonify({"Message": "Ingredient not found"})
+        return jsonify({"Message": "Ingredient deleted successfully."})

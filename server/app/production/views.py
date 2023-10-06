@@ -37,6 +37,20 @@ class ProductsRoutes:
             return jsonify({"message": f"Product of id {id} not found."}), 404
         return jsonify(product.to_json())
     
+    @production.put('/products/<int:id>')
+    def update_product(id):
+        data = request.get_json()
+        product = Product.query.get(id)
+        if not product:
+            return jsonify({"message": "Product not found"}), 404
+        product.product_id = data.get("product_id")
+        product.product_name = data.get("product_name")
+        product.product_price = data.get("product_price")
+        product.product_description = data.get("product_description")
+        db.session.add(product)
+        db.session.commit()
+        return jsonify({"message": "product updated successfully"})
+    
     @production.delete('/products/<int:id>')
     def delete_product(id):
         product = Product.query.get(id)
@@ -82,6 +96,25 @@ class ProductionRunsRoutes:
             return jsonify({"message": f"Run not found!"})
         return jsonify(run.to_json())
     
+    @production.put('/productionruns/<int:id>')
+    def update_run(id):
+        data = request.get_json()
+        run = ProductionRuns.query.get(id)
+        product = Product.query.get(data.get("product_id"))
+        if not run:
+            return jsonify({"message": f"Run not found!"})
+        else:
+            if not product:
+                return jsonify({"message": "Product not found!"})
+            else:
+                run.flour_kneaded = data.get("flour_kneaded")
+                run.oil_used = data.get("oil_used")
+                run.packets_produced = data.get("packets_produced")
+                run.product_id = data.get("product_id")
+        db.session.add(run)
+        db.session.commit()
+        return jsonify({"message": "Run updated successfully"})
+    
     @production.delete('/productionruns/<int:id>')
     def delete_run(id):
         run = ProductionRuns.query.get(id)
@@ -101,11 +134,13 @@ class IngredientsRoutes:
             ingredient = Ingredient(
                 ingredient_id = data.get("ingredient_id"),
                 ingredient_name = data.get("ingredient_name"),
+                ingredient_quantity = data.get("ingredient_quantity"),
                 ingredient_measurement = data.get("ingredient_measurement"),
                 ingredient_cost = data.get("ingredient_cost")
             )
             db.session.add(ingredient)
             db.session.commit()
+        return jsonify({"message": "Ingredient added successfully"})
 
     @production.get('/ingredients')
     def view_ingredients():
@@ -119,8 +154,23 @@ class IngredientsRoutes:
     def view_ingredient(id):
         ingredient = Ingredient.query.get(id)
         if not ingredient:
-            return jsonify({"message": "Product not found"})
+            return jsonify({"message": "Ingredient not found"})
         return jsonify(ingredient.to_json())
+    
+    @production.put('/ingredients/<int:id>')
+    def update_ingredient(id):
+        data = request.get_json()
+        ingredient = Ingredient.query.get(id)
+        if not ingredient:
+            return jsonify({"message": "Ingredient not found"})
+        ingredient.ingredient_id = data.get("ingredient_id")
+        ingredient.ingredient_name = data.get("ingredient_name")
+        ingredient.ingredient_quantity = data.get("ingredient_quantity")
+        ingredient.ingredient_measurement = data.get("ingredient_measurement")
+        ingredient.ingredient_cost = data.get("ingredient_cost")
+        db.session.add(ingredient)
+        db.session.commit()
+        return jsonify({"message": "Ingredient updated successfully"})
     
     @production.delete('/ingredients/<int:id>')
     def delete_ingredient(id):

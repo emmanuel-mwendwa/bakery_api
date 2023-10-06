@@ -13,6 +13,7 @@ class Product(db.Model):
     
     def to_json(self):
         json_product = {
+            "Product ID": self.product_id,
             "Product Name": self.product_name,
             "Product Price": self.product_price,
             "Product Description": self.product_description,
@@ -47,13 +48,17 @@ class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ingredient_id = db.Column(db.String(13), unique=True, nullable=False)
     ingredient_name = db.Column(db.String(50), unique=True, nullable=False)
-    ingredient_measurement = db.Column(db.Integer, db.ForeignKey("measurements.id"))
+    ingredient_quantity = db.Column(db.Integer, nullable=False)
+    ingredient_measurement = db.Column(db.Integer, nullable=False)
     ingredient_cost = db.Column(db.Float, nullable=False)
 
     def to_json(self):
         json_ingredient = {
             "Ingredient Id": self.ingredient_id,
             "Ingredient Name": self.ingredient_name,
-            "Unit of Measurement": self.ingredient_measurement,
+            # "Ingredient Quantity": self.ingredient_quantity,
+            "Unit of Measurement": str(self.ingredient_quantity) + " " + self.ingredient_measurement,
             "Ingredient Cost": self.ingredient_cost
         }
+
+        return json_ingredient

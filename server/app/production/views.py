@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from . import production
 from .. import db
-from ..models import Product, ProductionRuns, Ingredient
+from ..models import Product, ProductionRuns, Ingredient, Recipe, RecipeIngredient
 
 @production.route("/")
 def production_home():
@@ -177,4 +177,134 @@ class IngredientsRoutes:
         ingredient = Ingredient.query.get(id)
         if not ingredient:
             return jsonify({"Message": "Ingredient not found"})
+        db.session.delete(ingredient)
+        db.session.commit()
         return jsonify({"Message": "Ingredient deleted successfully."})
+    
+
+class RecipeRoutes:
+    @production.post("/recipes")
+    def create_recipe():
+        data = request.get_json()
+        product = Product.query.get(data.get("product_id"))
+        if not product:
+            return jsonify({"message": "Product not found"})
+        recipe = Recipe(
+            product_id = data.get("product_id"),
+            description = data.get("description"),
+            yield_amount = data.get("yield_amount")
+        )
+        db.session.add(recipe)
+        db.session.commit()
+        return jsonify({"message": "Recipe added successfully"})
+
+    @production.get("/recipes")
+    def view_recipes():
+        recipes = Recipe.query.all()
+        recipes_list = []
+        for recipe in recipes:
+            recipes_list.append(recipe.to_json())
+        return jsonify(recipes_list)
+    
+    @production.get("/recipes/<int:id>")
+    def view_recipe(id):
+        recipe = Recipe.query.get(id)
+        if not recipe:
+            return jsonify({"message": "Recipe not found"})
+        return jsonify(recipe.to_json())
+    
+    @production.put("/recipes/<int:id>")
+    def update_recipe(id):
+        data = request.get_json()
+        recipe = Recipe.query.get(id)
+        if not recipe:
+            return jsonify({"message": "Recipe not found"})
+        product = Product.query.get(data.get("product_id"))
+        if not product:
+            return jsonify({"message": "Product not found"})
+        recipe.product_id = data.get("product_id")
+        recipe.description = data.get("description")
+        recipe.yield_amount = data.get("yield_amount")
+        db.session.add(recipe)
+        db.session.commit()
+        return jsonify({"message": "recipe updated successfully"})
+    
+    @production.delete("/recipes/<int:id>")
+    def delete_recipe(id):
+        recipe = Recipe.query.get(id)
+        if not recipe:
+            return jsonify({"message": "Recipe not found"})
+        db.session.delete(recipe)
+        db.session.commit()
+        return jsonify({"message": "Recipe deleted successfully"})
+    
+class RecipeDetails:
+    @production.post("/recipedetails")
+    def new_recipeDetail():
+        data = request.get_json()
+        
+        if not Recipe.query.get(data.get("recipe_id")):
+            return jsonify({"message": "Recipe not found"})
+        
+        if not Ingredient.query.get(data.get("ingredient_id")):
+            return jsonify({"message": "Ingredient not found"})
+        
+        new_detail = RecipeIngredient(
+            recipe_id = data.get("recipe_id"),
+            ingredient_id = data.get("ingredient_id"),
+            quantity = data.get("quantity"),
+            unit_of_measurement = data.get("measurement")
+        )
+        db.session.add(new_detail)
+        db.session.commit()
+
+        return jsonify({"message": "Recipe details added successfully"})
+    
+    @production.get("/recipedetails")
+    def view_recipeDetails():
+        recipe_details = RecipeIngredient.query.all()
+        recipe_details_list = []
+        for recipe_detail in recipe_details:
+            recipe_details_list.append(recipe_detail.to_json())
+        return jsonify(recipe_details_list)
+    
+    @production.get("/recipedetails/<int:id>")
+    def view_recipeDetail(id):
+        recipe_detail = Recipe.query.get(id)
+        if not recipe_detail:
+            return jsonify({"message": "Recipe not found"})
+        return jsonify(recipe_detail.to_json())
+    
+    @production.put("/recipedetails/<int:id>")
+    def update_recipeDetail(id):
+        data = request.get_json()
+
+        recipe_detail = RecipeIngredient.query.get(id)
+
+        if not RecipeIngredient.query.get(id):
+            return jsonify({"message": "Recipe Detail not found"})
+        
+        if not Recipe.query.get(data.get("recipe_id")):
+            return jsonify({"message": "Recipe not found"})
+        
+        if not Ingredient.query.get(data.get("ingredient_id")):
+            return jsonify({"message": "Ingredient not found"})
+        
+        recipe_detail.recipe_id = data.get("recipe_id")
+        recipe_detail.ingredient_id = data.get("ingredient_id")
+        recipe_detail.quantity = data.get("quantity")
+        recipe_detail.unit_of_measurement = data.get("measurement")
+
+        db.session.add(recipe_detail)
+        db.session.commit()
+
+        return jsonify({"message": "Recipe details added successfully"})
+    
+    @production.delete("/recipedetails/<int:id>")
+    def delete_recipeDetail(id):
+        recipe_detail = RecipeIngredient.query.get(id)
+        if not recipe_detail:
+            return jsonify({"message": "Recipe detail not found"})
+        db.session.delete(recipe_detail)
+        db.session.commit()
+        return jsonify({"message": "Recipe detail deleted successfully"})

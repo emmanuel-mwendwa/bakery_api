@@ -77,10 +77,20 @@ class Recipe(db.Model):
     recipe_ingredients = db.relationship('RecipeIngredient', backref="recipe", lazy='dynamic')
 
     def to_json(self):
+        ingredient_details = []
+
+        for ingredient in self.recipe_ingredients:
+            ingredient_details.append({
+                "Ingredient Name": ingredient.recipe_association.ingredient_name,
+                "Quantity": ingredient.quantity,
+                "Unit of Measurement": ingredient.unit_of_measurement
+            })
+
         json_recipe = {
             "Product Name": self.product_recipe.product_name,
             "Yield Amount": self.yield_amount,
-            "Description": self.description
+            "Description": self.description,
+            "Recipe Details": ingredient_details
         }
 
         return json_recipe

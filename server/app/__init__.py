@@ -12,7 +12,13 @@ def create_app(config_name):
 
     db.init_app(app)
 
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
     from .production import production as production_blueprint
     app.register_blueprint(production_blueprint, url_prefix='/production')
+
+    from .sales import sales as sales_blueprint
+    app.register_blueprint(sales_blueprint, url_prefix='/sales')
 
     return app

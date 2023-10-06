@@ -1,4 +1,124 @@
 from . import db
+from flask import current_app, url_for
+
+class Permission:
+    VIEW_PRODUCTS = 1
+    VIEW_INVENTORY = 2
+    VIEW_PRODUCTION_RUN = 4
+    MANAGE_PRODUCTS = 8
+    MANAGE_INVENTORY = 16
+    MANAGE_PRODUCTION_RUN = 32
+    VIEW_SALES_REPORT = 64
+    MANAGE_SALES_REPORT = 128
+    VIEW_RECIPE_DETAILS = 256
+    MANAGE_RECIPE_DETAILS = 512
+    MANAGER = 1024
+    ADMINISTRATOR = 2048
+
+
+class Role(db.Model):
+    __tablename__ = "roles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    # role assigned to new users upon registration
+    default = db.Column(db.Boolean, default=False, index=True)
+    # permissions allowed for different users
+    permissions = db.Column(db.Integer)
+    users = db.relationship('User', backref='role', lazy='dynamic')
+
+    # set the value of permissions to 0 if no initial value is given
+    def __init__(self, **kwargs):
+        super(Role, self).__init__(**kwargs)
+        if self.permissions is None:
+            self.permissions = 0
+
+    # add permission
+    def add_permission(self, perm):
+        if not self.has_permission(perm):
+            self.permissions += perm
+
+    # remove permission
+    def remove_permission(self, perm):
+        if self.has_permission(perm):
+            self.permissions -= perm
+
+    # reset permission
+    def reset_permissions(self):
+        self.permissions = 0
+
+    # check if user has permission
+    def has_permission(self, perm):
+        return self.permissions & perm == perm
+    
+    # adding roles to the database
+    @staticmethod
+    def insert_roles():
+        roles = {
+            'User': [Permission.VIEW_PRODUCTS],
+
+            'Baker': [Permission.VIEW_RECIPE_DETAILS, Permission.MANAGE_RECIPE_DETAILS, Permission.VIEW_PRODUCTS],
+
+            'Sales_Associate': [Permission.VIEW_SALES_REPORT, Permission.MANAGE_SALES_REPORT, Permission.VIEW_INVENTORY, Permission.VIEW_PRODUCTS],
+
+            'Production_Supervisor': [Permission.VIEW_PRODUCTS, Permission.VIEW_PRODUCTION_RUN, Permission.VIEW_INVENTORY, Permission.MANAGE_PRODUCTS, Permission.MANAGE_INVENTORY, Permission.MANAGE_PRODUCTION_RUN],
+
+            'Manager': [Permission.VIEW_PRODUCTS, Permission.VIEW_INVENTORY, Permission.VIEW_PRODUCTION_RUN, Permission.VIEW_SALES_REPORT, Permission.MANAGE_PRODUCTS, Permission.MANAGE_INVENTORY, Permission.MANAGE_PRODUCTION_RUN, Permission.MANAGE_SALES_REPORT, Permission.MANAGER],
+
+            'Administrator': [Permission.VIEW_PRODUCTS, Permission.VIEW_INVENTORY, Permission.VIEW_PRODUCTION_RUN, Permission.MANAGE_PRODUCTS, Permission.MANAGE_INVENTORY, Permission.MANAGE_PRODUCTION_RUN, Permission.VIEW_SALES_REPORT, Permission.MANAGE_SALES_REPORT, Permission.VIEW_RECIPE_DETAILS, Permission.MANAGE_RECIPE_DETAILS, Permission.MANAGER, Permission.ADMINISTRATOR]
+        }
+        default_role = 'User'
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.reset_permissions()
+            for perm in roles[r]:
+                role.add_permission(perm)
+            role.default = (role.name == default_role)
+            db.session.add(role)
+        db.session.commit()
+
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    username = db.Column(db.String(64), unique=True, index=True, nullable=False)
+    email = db.Column(db.String(64), unique=True, index=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    phone_no = db.Column(db.String(13))
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))
+
+    # assigning roles to users
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email == current_app.config['APP_ADMIN']:
+                self.role = Role.query.filter_by(name='Administrator').first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
+
+    # role verification
+    def can(self, perm):
+        return self.role is not None and self.role.has_permission(perm)
+    
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTRATOR)
+
+    def to_json(self):
+        json_user = {
+            "name": self.name,
+            "username": self.username,
+            "email": self.email,
+            "phone_no": self.phone_no,
+            "role": self.role.name
+        }
+
+        return json_user
+
+
 
 class Product(db.Model):
     __tablename__ = "products"
@@ -120,9 +240,19 @@ class RecipeIngredient(db.Model):
 class Customer(db.Model):
     __tablename__ = "customers"
 
-    cust_id = db.Column(db.Integer, primary_key=True)
-    cust_name = db.Column(db.String(128))
-    cust_email = db.Column(db.String(128))
-    cust_phone_no = db.Column(db.Integer)
-    cust_mpesa_agent_name = db.Column(db.String(128))
+    customer_id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(128))
+    customer_email = db.Column(db.String(128))
+    customer_phone_no = db.Column(db.Integer)
+    customer_mpesa_agent_name = db.Column(db.String(128))
+
+    def to_json(self):
+        json_customer = {
+            "Customer Name": self.customer_name,
+            "Customer Email": self.customer_email,
+            "Customer Phone": self.customer_phone_no,
+            "Agent Name": self.customer_mpesa_agent_name
+        }
+
+        return json_customer
 

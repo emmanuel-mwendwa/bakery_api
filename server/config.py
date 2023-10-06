@@ -3,6 +3,8 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    APP_ADMIN = os.environ.get("APP_ADMIN")
     
     @staticmethod
     def init_app(app):

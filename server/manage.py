@@ -1,6 +1,6 @@
 from app import create_app, db
 from flask_migrate import Migrate
-from app.models import Product, ProductionRuns, Ingredient, Recipe, RecipeIngredient
+from app.models import Product, ProductionRuns, Ingredient, Recipe, RecipeIngredient, Route, Role, Customer
 
 app = create_app("default")
 migrate = Migrate(app, db)

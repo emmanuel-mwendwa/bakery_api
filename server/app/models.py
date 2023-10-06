@@ -89,7 +89,10 @@ class User(db.Model):
     email = db.Column(db.String(64), unique=True, index=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     phone_no = db.Column(db.String(13))
+    confirmed = db.Column(db.Boolean, default=False)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))
+    
+    routes = db.relationship("Route", backref="sales_agent", lazy="dynamic")
 
     # assigning roles to users
     def __init__(self, **kwargs):
@@ -237,6 +240,24 @@ class RecipeIngredient(db.Model):
         return json_recipeIngredient
     
 
+class Route(db.Model):
+    __tablename__ = "routes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    route_name = db.Column(db.String(26))
+    sales_associate_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    
+    customers = db.relationship('Customer', lazy='dynamic', backref="cust_route")
+
+    def to_json(self):
+        json_route = {
+            "Route Name": self.route_name,
+            "Sales Agent": self.sales_agent.name
+        }
+
+        return json_route
+
+
 class Customer(db.Model):
     __tablename__ = "customers"
 
@@ -245,6 +266,7 @@ class Customer(db.Model):
     customer_email = db.Column(db.String(128))
     customer_phone_no = db.Column(db.Integer)
     customer_mpesa_agent_name = db.Column(db.String(128))
+    route_id = db.Column(db.Integer, db.ForeignKey("routes.id"))
 
     def to_json(self):
         json_customer = {

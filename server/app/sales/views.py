@@ -1,7 +1,33 @@
 from . import sales
 from .. import db
-from ..models import Customer
+from ..models import Customer, Route, User
 from flask import request, jsonify
+
+
+class RoutesRoutes:
+    @sales.post("/routes")
+    def new_route():
+        data = request.get_json()
+        new_route = Route(
+            route_name = data.get("route_name"),
+            sales_associate_id = data.get("sales_associate_id")
+        )
+
+        db.session.add(new_route)
+        db.session.commit()
+        return jsonify({"message": [
+            {"data": "Route created successfully"},
+            {"route": new_route.to_json()}
+        ]})
+    
+    @sales.get("/routes")
+    def view_routes():
+        routes = Route.query.all()
+        routes_list = []
+
+        for route in routes:
+            routes_list.append(route.to_json())
+        return jsonify(routes_list)
 
 class CustomerRoutes:
     @sales.post("/customers")

@@ -1,7 +1,8 @@
 from . import sales
 from .. import db
-from ..models import Customer, Route, User
+from ..models import Customer, Route, User, Dispatch, DispatchDetails, Product
 from flask import request, jsonify
+import datetime
 
 
 class RoutesRoutes:
@@ -108,16 +109,16 @@ class CustomerRoutes:
         return jsonify(customer.to_json())
     
     @sales.put("/customers/<int:id>")
-    def update_customer():
+    def update_customer(id):
         data = request.get_json()
         customer = Customer.query.get(id)
 
         if not customer:
             return jsonify({"message": "Customer not found"})
 
-        customer.customer_name = data.get("customer_name"),
-        customer.customer_email = data.get("customer_email"),
-        customer.customer_phone = data.get("customer_phone"),
+        customer.customer_name = data.get("customer_name")
+        customer.customer_email = data.get("customer_email")
+        customer.customer_phone = data.get("customer_phone")
         customer.customer_agent_name = data.get("customer_agent_name")
         
         db.session.add(customer)
@@ -141,4 +142,64 @@ class CustomerRoutes:
     
 
 class DispatchRoutes:
-    pass
+    @sales.post("/dispatches")
+    def new_dispatch():
+        data = request.get_json()
+        route = Route.query.get(data.get("route_id"))
+        if not route:
+            jsonify({"message": "Route not found"})
+        new_disptach = Dispatch(
+            dispatch_date = datetime.datetime.utcnow(),
+            route_id = data.get("route_id")
+        )
+
+        db.session.add(new_disptach)
+        db.session.commit()
+        return jsonify({"message": "Dispatch created successfully!"})
+
+    @sales.get("/dispatches")
+    def view_disptaches():
+        dispatches = Dispatch.query.all()
+        dispatches_list = []
+
+        for dispatch in dispatches:
+            dispatches_list.append(dispatch.to_json())
+
+        return jsonify(dispatches_list)
+    
+    @sales.get("/dispatches/<int:id>")
+    def view_dispatch(id):
+        dispatch = Dispatch.query.get(id)
+        if not dispatch:
+            return jsonify({"message": "Dispatch not found"})
+        return jsonify(dispatch.to_json())
+    
+    @sales.put("/dispatches/<int:id>")
+    def update_dispatch(id):
+        data = request.get_json()
+        dispatch = Dispatch.query.get(id)
+
+        if not dispatch:
+            return jsonify({"message": "Dispatch not found"})
+
+        dispatch.dispatch_date = datetime.datetime.utcnow()
+        dispatch.route_id = data.get("route_id")
+        
+        db.session.add(dispatch)
+        db.session.commit()
+
+        return jsonify({"message": [
+            {"data": "Dispatch updated successfully"},
+            {"dispatch": dispatch.to_json()}
+            ]
+        })
+    
+    @sales.delete("/dispatches/<int:id>")
+    def delete_dispatch(id):
+        dispatch = Dispatch.query.get(id)
+        if not dispatch:
+            return jsonify({"message": "Dispatch not found"})
+        
+        db.session.delete(dispatch)
+        db.session.commit()
+        return jsonify({"message": "Dispatch deleted successfully"})

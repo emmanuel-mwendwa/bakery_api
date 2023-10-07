@@ -133,6 +133,7 @@ class Product(db.Model):
 
     production_runs = db.relationship('ProductionRuns', backref='product', lazy='dynamic')
     product_recipe = db.relationship('Recipe', backref='product_recipe', lazy='dynamic')
+    product_dispatch = db.relationship('DispatchDetails', backref='product_dispatch', lazy='dynamic')
     
     def to_json(self):
         json_product = {
@@ -247,6 +248,7 @@ class Route(db.Model):
     sales_associate_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     
     customers = db.relationship('Customer', lazy='dynamic', backref="cust_route")
+    dispatches = db.relationship('Dispatch', lazy='dynamic', backref='route_dispatch')
 
     def to_json(self):
         json_route = {
@@ -287,14 +289,27 @@ class Dispatch(db.Model):
 
     dispatch_details = db.relationship('DispatchDetails', backref='dispatches', lazy='dynamic')
 
+    def to_json(self):
+        json_dispatch = {
+            "Dispatch Date": self.dispatch_date,
+            "Route Name": self.route_id
+        }
+        return json_dispatch
+
 
 class DispatchDetails(db.Model):
     __tablename__ = "dispatch_details"
 
     id = db.Column(db.Integer, primary_key=True)
-    dispatch_id = db.Column(db.Integer, db.ForeignKey("dispatch.id"))
+    dispatch_id = db.Column(db.Integer, db.ForeignKey("dispatches.id"))
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
     quantity = db.Column(db.Float)
     returns = db.Column(db.Float)
 
-    product = db.relationship('Product', backref='product_dispatch', lazy='dynamic')
+    def to_json(self):
+        json_dispatch_details = {
+            "Dispatch Id": self.dispatch_id,
+            "Product Id": self.product_id,
+            "Quantity": self.quantity,
+            "Returns": self.returns
+        }

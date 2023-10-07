@@ -313,3 +313,5 @@ class DispatchDetails(db.Model):
             "Quantity": self.quantity,
             "Returns": self.returns
         }
+
+        return json_dispatch_details

@@ -48,6 +48,9 @@ class RoutesRoutes:
 
         if not route:
             return jsonify({"message": "Route not found"})
+        
+        if not User.query.get(data.get("sales_associate_id")):
+            return jsonify({"message": "Sales Agent not found"})
 
         route.route_name = data.get("route_name")
         route.sales_associate_id = data.get("sales_associate_id")
@@ -203,3 +206,82 @@ class DispatchRoutes:
         db.session.delete(dispatch)
         db.session.commit()
         return jsonify({"message": "Dispatch deleted successfully"})
+    
+
+class DispatchDetailsRoutes:
+    @sales.post("/dispatch_details")
+    def new_dispatchDetail():
+        data = request.get_json()
+
+        if not Dispatch.query.get(data.get("dispatch_id")):
+            jsonify({"message": "Dispatch not found"})
+
+        if not Product.query.get(data.get("product_id")):
+            jsonify({"message": "Product not found"})
+
+        new_disptachDetail = DispatchDetails(
+            dispatch_id = data.get("dispatch_id"),
+            product_id = data.get("product_id"),
+            quantity = data.get("quantity"),
+            returns = data.get("returns")
+        )
+
+        db.session.add(new_disptachDetail)
+        db.session.commit()
+        return jsonify({"message": "Dispatch Detail created successfully!"})
+
+    @sales.get("/dispatch_details")
+    def view_disptachDetails():
+        dispatch_details = DispatchDetails.query.all()
+        dispatch_details_list = []
+
+        for dispatch_detail in dispatch_details:
+            dispatch_details_list.append(dispatch_detail.to_json())
+
+        return jsonify(dispatch_details_list)
+    
+    @sales.get("/dispatch_details/<int:id>")
+    def view_dispatchDetail(id):
+        dispatch_detail = DispatchDetails.query.get(id)
+        if not dispatch_detail:
+            return jsonify({"message": "Dispatch Detail not found"})
+        return jsonify(dispatch_detail.to_json())
+    
+    @sales.put("/dispatch_details/<int:id>")
+    def update_dispatchDetail(id):
+        data = request.get_json()
+        dispatch_detail = DispatchDetails.query.get(id)
+
+        if not dispatch_detail:
+            return jsonify({"message": "Dispatch Detail not found"})
+        
+        if not Dispatch.query.get(data.get("dispatch_id")):
+            jsonify({"message": "Dispatch not found"})
+
+        if not Product.query.get(data.get("product_id")):
+            jsonify({"message": "Product not found"})
+
+        dispatch_detail.dispatch_id = data.get("dispatch_id")
+        dispatch_detail.product_id = data.get("product_id")
+        dispatch_detail.quantity = data.get("quantity")
+        dispatch_detail.returns = data.get("returns")
+        
+        db.session.add(dispatch_detail)
+        db.session.commit()
+
+        return jsonify({"message": [
+            {"data": "Dispatch Detail updated successfully"},
+            {"dispatch_detail": dispatch_detail.to_json()}
+            ]
+        })
+    
+    @sales.delete("/dispatch_details/<int:id>")
+    def delete_dispatchDetail(id):
+        dispatch_detail = DispatchDetails.query.get(id)
+        if not dispatch_detail:
+            return jsonify({"message": "Dispatch Detail not found"})
+        
+        db.session.delete(dispatch_detail)
+        db.session.commit()
+        return jsonify({"message": "Dispatch Detail deleted successfully"})
+       

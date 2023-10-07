@@ -8,6 +8,9 @@ class RoutesRoutes:
     @sales.post("/routes")
     def new_route():
         data = request.get_json()
+        sales_agent = User.query.get(data.get("sales_associate_id"))
+        if not sales_agent:
+            return jsonify({"message": "Sales Agent not found"})
         new_route = Route(
             route_name = data.get("route_name"),
             sales_associate_id = data.get("sales_associate_id")
@@ -28,6 +31,44 @@ class RoutesRoutes:
         for route in routes:
             routes_list.append(route.to_json())
         return jsonify(routes_list)
+    
+    @sales.get("/routes/<int:id>")
+    def view_route(id):
+        route = Route.query.get(id)
+        if not route:
+            return jsonify({"message": "Route not found"})
+        
+        return jsonify(route.to_json())
+    
+    @sales.put("/routes/<int:id>")
+    def update_route(id):
+        data = request.get_json()
+        route = Route.query.get(id)
+
+        if not route:
+            return jsonify({"message": "Route not found"})
+
+        route.route_name = data.get("route_name")
+        route.sales_associate_id = data.get("sales_associate_id")
+        
+        db.session.add(route)
+        db.session.commit()
+
+        return jsonify({"message": [
+            {"data": "Route updated successfully"},
+            {"route": route.to_json()}
+            ]
+        })
+    
+    @sales.delete("/routes/<int:id>")
+    def delete_route(id):
+        route = Route.query.get(id)
+        if not route:
+            return jsonify({"message": "Route not found"})
+        
+        db.session.delete(route)
+        db.session.commit()
+        return jsonify({"message": "Route deleted successfully"})
 
 class CustomerRoutes:
     @sales.post("/customers")
@@ -99,5 +140,5 @@ class CustomerRoutes:
         return jsonify({"message": "Customer deleted successfully"})
     
 
-class Dispatch:
+class DispatchRoutes:
     pass

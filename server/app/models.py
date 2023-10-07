@@ -122,7 +122,6 @@ class User(db.Model):
         return json_user
 
 
-
 class Product(db.Model):
     __tablename__ = "products"
 
@@ -278,3 +277,24 @@ class Customer(db.Model):
 
         return json_customer
 
+
+class Dispatch(db.Model):
+    __tablename__ = "dispatches"
+
+    id = db.Column(db.Integer, primary_key=True)
+    dispatch_date = db.Column(db.DateTime())
+    route_id = db.Column(db.Integer, db.ForeignKey("routes.id"))
+
+    dispatch_details = db.relationship('DispatchDetails', backref='dispatches', lazy='dynamic')
+
+
+class DispatchDetails(db.Model):
+    __tablename__ = "dispatch_details"
+
+    id = db.Column(db.Integer, primary_key=True)
+    dispatch_id = db.Column(db.Integer, db.ForeignKey("dispatch.id"))
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
+    quantity = db.Column(db.Float)
+    returns = db.Column(db.Float)
+
+    product = db.relationship('Product', backref='product_dispatch', lazy='dynamic')

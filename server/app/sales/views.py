@@ -148,9 +148,10 @@ class DispatchRoutes:
     @sales.post("/dispatches")
     def new_dispatch():
         data = request.get_json()
-        route = Route.query.get(data.get("route_id"))
-        if not route:
-            jsonify({"message": "Route not found"})
+        
+        if not Route.query.get(data.get("route_id")):
+            return jsonify({"message": "Route not found"})
+        
         new_disptach = Dispatch(
             dispatch_date = datetime.datetime.utcnow(),
             route_id = data.get("route_id")
@@ -158,7 +159,10 @@ class DispatchRoutes:
 
         db.session.add(new_disptach)
         db.session.commit()
-        return jsonify({"message": "Dispatch created successfully!"})
+        return jsonify({"message": [
+            {"message": "Dispatch created successfully"},
+            {"data": new_disptach.to_json()}
+            ]})
 
     @sales.get("/dispatches")
     def view_disptaches():
@@ -184,6 +188,9 @@ class DispatchRoutes:
 
         if not dispatch:
             return jsonify({"message": "Dispatch not found"})
+        
+        if not Route.query.get(data.get("route_id")):
+            return jsonify({"message": "Route not found"})
 
         dispatch.dispatch_date = datetime.datetime.utcnow()
         dispatch.route_id = data.get("route_id")
@@ -214,10 +221,10 @@ class DispatchDetailsRoutes:
         data = request.get_json()
 
         if not Dispatch.query.get(data.get("dispatch_id")):
-            jsonify({"message": "Dispatch not found"})
+            return jsonify({"message": "Dispatch not found"})
 
         if not Product.query.get(data.get("product_id")):
-            jsonify({"message": "Product not found"})
+            return jsonify({"message": "Product not found"})
 
         new_disptachDetail = DispatchDetails(
             dispatch_id = data.get("dispatch_id"),
@@ -256,10 +263,10 @@ class DispatchDetailsRoutes:
             return jsonify({"message": "Dispatch Detail not found"})
         
         if not Dispatch.query.get(data.get("dispatch_id")):
-            jsonify({"message": "Dispatch not found"})
+            return jsonify({"message": "Dispatch not found"})
 
         if not Product.query.get(data.get("product_id")):
-            jsonify({"message": "Product not found"})
+            return jsonify({"message": "Product not found"})
 
         dispatch_detail.dispatch_id = data.get("dispatch_id")
         dispatch_detail.product_id = data.get("product_id")

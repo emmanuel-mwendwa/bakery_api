@@ -196,6 +196,7 @@ class Recipe(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
     description = db.Column(db.Text)
     yield_amount = db.Column(db.Integer, nullable=False)
+    total_cost = db.Column(db.Float)
 
     recipe_ingredients = db.relationship('RecipeIngredient', backref="recipe", lazy='dynamic')
 
@@ -208,6 +209,11 @@ class Recipe(db.Model):
                 "Quantity": ingredient.quantity,
                 "Unit of Measurement": ingredient.unit_of_measurement
             })
+
+            try:
+                self.total_cost = ingredient.unit_cost
+            except:
+                return {"Message": "Failed successfully"}
 
         json_recipe = {
             "Product Name": self.product_recipe.product_name,
@@ -227,7 +233,11 @@ class RecipeIngredient(db.Model):
     ingredient_id = db.Column(db.Integer, db.ForeignKey("ingredients.id"))
     quantity = db.Column(db.Float, nullable=False)
     unit_of_measurement = db.Column(db.String(12))
+    unit_cost = db.Column(db.Float)
 
+    def cost(self):
+        self.unit_cost = self.recipe_association * self.quantity
+        return self.cost
 
     def to_json(self):
         json_recipeIngredient = {

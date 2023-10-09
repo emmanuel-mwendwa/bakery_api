@@ -63,6 +63,23 @@
                         "type": "string"
                     }
                 }
+            },
+            "Runs": {
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "integer"
+                    },
+                    "flour_kneaded": {
+                        "type": "integer"
+                    },
+                    "oil_used": {
+                        "type": "integer"
+                    },
+                    "packets_produced": {
+                        "type": "integer"
+                    }
+                }
             }
         }
     },
@@ -224,6 +241,168 @@
                         "description": "NOT FOUND",
                         "schema": {
                             "$ref": "#/components/schemas/Products"
+                        }
+                    }
+                }
+            }
+        },
+
+    "/production/productionruns": {
+        "get": {
+            "tags": [
+                "Get all production runs from API"
+            ],
+            "summary": "Get all production runs",
+            "responses": {
+            "200": {
+                "description": "Successful operation",
+                "schema": {
+                    "$ref": "#/components/schemas/Runs"
+                }
+            },
+            "404": {
+                "description": "NOT FOUND",
+                "schema": {
+                    "$ref": "#/components/schemas/Runs"
+                    }
+                }
+        }
+        },
+        "post": {
+            "tags": [
+                "Add a production run to API"
+            ],
+            "summary": "Add production run",
+            "requestBody": {
+                "description": "Post new production run to database",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "OK",
+                    "schema": {
+                        "$ref": "#/components/schemas/Runs"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Runs"
+                    }
+                }
+            }
+        }
+        },
+
+        "/production/productionruns/{id}": {
+            "get": {
+                "tags": [
+                    "Get production run from API"
+                ],
+                "summary": "Get Production Run",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "production run id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update Production Run on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "production run id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Product",
+                "requestBody": {
+                    "description": "Update Existing production run on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Runs"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete production run on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "production run id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Product",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Runs"
                         }
                     }
                 }

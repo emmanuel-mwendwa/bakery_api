@@ -247,7 +247,7 @@ class Route(db.Model):
     route_name = db.Column(db.String(26))
     sales_associate_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     
-    customers = db.relationship('Customer', lazy='dynamic', backref="cust_route")
+    customers = db.relationship('Customer', lazy='dynamic', backref="customers")
     dispatches = db.relationship('Dispatch', lazy='dynamic', backref='route_dispatch')
 
     def to_json(self):
@@ -274,7 +274,8 @@ class Customer(db.Model):
             "Customer Name": self.customer_name,
             "Customer Email": self.customer_email,
             "Customer Phone": self.customer_phone_no,
-            "Agent Name": self.customer_mpesa_agent_name
+            "Agent Name": self.customer_mpesa_agent_name,
+            "Route Name": self.customers.route_name
         }
 
         return json_customer
@@ -290,9 +291,19 @@ class Dispatch(db.Model):
     dispatch_details = db.relationship('DispatchDetails', backref='dispatches', lazy='dynamic')
 
     def to_json(self):
+        dispatch_details = []
+
+        for dispatch_detail in self.dispatch_details:
+            dispatch_details.append({
+                "Dispatch Id": dispatch_detail.dispatch_id,
+                "Product Name": dispatch_detail.product_dispatch.product_name,
+                "Quantity": dispatch_detail.quantity,
+                "Returns": dispatch_detail.returns
+            })
         json_dispatch = {
             "Dispatch Date": self.dispatch_date,
-            "Route Name": self.route_id
+            "Route Name": self.route_dispatch.route_name,
+            "Dispatch Details": dispatch_details
         }
         return json_dispatch
 
@@ -309,7 +320,7 @@ class DispatchDetails(db.Model):
     def to_json(self):
         json_dispatch_details = {
             "Dispatch Id": self.dispatch_id,
-            "Product Id": self.product_id,
+            "Product Name": self.product_dispatch.product_name,
             "Quantity": self.quantity,
             "Returns": self.returns
         }

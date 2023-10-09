@@ -189,6 +189,7 @@ class RecipeRoutes:
         product = Product.query.get(data.get("product_id"))
         if not product:
             return jsonify({"message": "Product not found"})
+        
         recipe = Recipe(
             product_id = data.get("product_id"),
             description = data.get("description"),
@@ -196,14 +197,17 @@ class RecipeRoutes:
         )
         db.session.add(recipe)
         db.session.commit()
+        
         return jsonify({"message": "Recipe added successfully"})
 
     @production.get("/recipes")
     def view_recipes():
         recipes = Recipe.query.all()
         recipes_list = []
+
         for recipe in recipes:
             recipes_list.append(recipe.to_json())
+
         return jsonify(recipes_list)
     
     @production.get("/recipes/<int:id>")
@@ -217,16 +221,21 @@ class RecipeRoutes:
     def update_recipe(id):
         data = request.get_json()
         recipe = Recipe.query.get(id)
+
         if not recipe:
             return jsonify({"message": "Recipe not found"})
+        
         product = Product.query.get(data.get("product_id"))
         if not product:
             return jsonify({"message": "Product not found"})
+        
         recipe.product_id = data.get("product_id")
         recipe.description = data.get("description")
         recipe.yield_amount = data.get("yield_amount")
+
         db.session.add(recipe)
         db.session.commit()
+
         return jsonify({"message": "recipe updated successfully"})
     
     @production.delete("/recipes/<int:id>")

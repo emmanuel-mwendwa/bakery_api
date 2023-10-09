@@ -78,11 +78,16 @@ class CustomerRoutes:
     @sales.post("/customers")
     def new_customer():
         data = request.get_json()
+
+        if not Route.query.get(data.get("route_id")):
+            return jsonify({"message": "Route not found"})
+
         new_customer = Customer(
             customer_name = data.get("customer_name"),
             customer_email = data.get("customer_email"),
-            customer_phone = data.get("customer_phone"),
-            customer_agent_name = data.get("customer_agent_name")
+            customer_phone_no = data.get("customer_phone"),
+            customer_mpesa_agent_name = data.get("customer_agent_name"),
+            route_id = data.get("route_id")
         )
         db.session.add(new_customer)
         db.session.commit()
@@ -101,7 +106,7 @@ class CustomerRoutes:
         for customer in customers:
             customers_list.append(customer.to_json())
         
-        return jsonify({customers_list})
+        return jsonify(customers_list)
     
     @sales.get("/customers/<int:id>")
     def view_customer(id):
@@ -118,11 +123,15 @@ class CustomerRoutes:
 
         if not customer:
             return jsonify({"message": "Customer not found"})
+        
+        if not Route.query.get(data.get("route_id")):
+            return jsonify({"message": "Route not found"})
 
         customer.customer_name = data.get("customer_name")
         customer.customer_email = data.get("customer_email")
         customer.customer_phone = data.get("customer_phone")
         customer.customer_agent_name = data.get("customer_agent_name")
+        customer.route_id = data.get("route_id")
         
         db.session.add(customer)
         db.session.commit()
@@ -167,12 +176,15 @@ class DispatchRoutes:
     @sales.get("/dispatches")
     def view_disptaches():
         dispatches = Dispatch.query.all()
+        all_dispatches = Dispatch.query.count()
         dispatches_list = []
 
         for dispatch in dispatches:
             dispatches_list.append(dispatch.to_json())
 
-        return jsonify(dispatches_list)
+        return jsonify({"message": [
+            {"All Dispatches": all_dispatches},
+            {"Dispatches": dispatches_list}]})
     
     @sales.get("/dispatches/<int:id>")
     def view_dispatch(id):
@@ -180,7 +192,7 @@ class DispatchRoutes:
         if not dispatch:
             return jsonify({"message": "Dispatch not found"})
         return jsonify(dispatch.to_json())
-    
+        
     @sales.put("/dispatches/<int:id>")
     def update_dispatch(id):
         data = request.get_json()
@@ -235,7 +247,7 @@ class DispatchDetailsRoutes:
 
         db.session.add(new_disptachDetail)
         db.session.commit()
-        return jsonify({"message": "Dispatch Detail created successfully!"})
+        return jsonify({"message": "Dispatch Detail created successfully!"}), 201
 
     @sales.get("/dispatch_details")
     def view_disptachDetails():

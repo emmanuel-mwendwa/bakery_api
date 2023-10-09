@@ -1,0 +1,233 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Bakery Management System API",
+      "description": "A sample API that demonstrates how to use my system.",
+      "version": "1.0.0"
+    },
+
+    "tags" : [
+        {
+            "name": "Bakery API",
+            "description": "Test API"
+        }
+    ],
+
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+
+    "components": {
+        "schemas": {
+            "Products":{
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "string"
+                    },
+                    "product_name": {
+                        "type": "string"
+                    },
+                    "product_price": {
+                        "type": "integer"
+                    },
+                    "product_description": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Id": {
+                "type": "integer",
+                "properties": {
+                    "name" : {
+                        "type": "integer"
+                    }
+                }
+            },
+
+            "update": {
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "string"
+                    },
+                    "product_name": {
+                        "type": "string"
+                    },
+                    "product_price": {
+                        "type": "integer"
+                    },
+                    "product_description": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+
+    "paths": {
+        "/production/products": {
+          "get": {
+            "tags": [
+                "Get all products from API"
+            ],
+            "summary": "Get all products",
+            "responses": {
+              "200": {
+                "description": "Successful operation",
+                "schema": {
+                    "$ref": "#/components/schemas/Products"
+                }
+              },
+              "404": {
+                "description": "NOT FOUND",
+                "schema": {
+                    "$ref": "#/components/schemas/Products"
+                    }
+                }
+          }
+        },
+          "post": {
+            "tags": [
+                "Add a product to API"
+            ],
+            "summary": "Add product",
+            "requestBody": {
+                "description": "Post new product to database",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "OK",
+                    "schema": {
+                        "$ref": "#/components/schemas/Products"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Products"
+                    }
+                }
+            }
+          }
+        },
+
+        "/production/products/{id}": {
+            "get": {
+                "tags": [
+                    "Get product from API"
+                ],
+                "summary": "Get Product",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "product id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update Product on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "product id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Product",
+                "requestBody": {
+                    "description": "Update Existing product on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/update"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete product on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "product id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Product",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Products"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

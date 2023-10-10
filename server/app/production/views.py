@@ -262,7 +262,8 @@ class RecipeDetails:
             recipe_id = data.get("recipe_id"),
             ingredient_id = data.get("ingredient_id"),
             quantity = data.get("quantity"),
-            unit_of_measurement = data.get("measurement")
+            unit_of_measurement = data.get("measurement"),
+            unit_cost = data.get("unit_cost")
         )
         db.session.add(new_detail)
         db.session.commit()
@@ -303,6 +304,7 @@ class RecipeDetails:
         recipe_detail.ingredient_id = data.get("ingredient_id")
         recipe_detail.quantity = data.get("quantity")
         recipe_detail.unit_of_measurement = data.get("measurement")
+        recipe_detail.unit_cost = data.get("unit_cost")
 
         db.session.add(recipe_detail)
         db.session.commit()

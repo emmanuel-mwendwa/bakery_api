@@ -233,7 +233,7 @@ class RecipeIngredient(db.Model):
     ingredient_id = db.Column(db.Integer, db.ForeignKey("ingredients.id"))
     quantity = db.Column(db.Float, nullable=False)
     unit_of_measurement = db.Column(db.String(12))
-    unit_cost = db.Column(db.Float)
+    unit_cost = db.Column(db.Float, nullable=False)
 
     def cost(self):
         self.unit_cost = self.recipe_association * self.quantity
@@ -244,7 +244,8 @@ class RecipeIngredient(db.Model):
             "Recipe Name": self.recipe.product_recipe.product_name,
             "Ingredient Name": self.recipe_association.ingredient_name,
             "Quantity": self.quantity,
-            "Unit of measurement": self.unit_of_measurement
+            "Unit of measurement": self.unit_of_measurement,
+            "Unit Cost": self.unit_cost
         }
 
         return json_recipeIngredient

@@ -369,7 +369,7 @@
                     }
                 }],
 
-                "summary": "Update Product",
+                "summary": "Update Production Run",
                 "requestBody": {
                     "description": "Update Existing production run on Database",
                     "required": true,
@@ -410,7 +410,7 @@
                         "$ref": "#/components/schemas/Id"
                     }
                 }],
-                "summary": "Delete Product",
+                "summary": "Delete Production Run",
 
                 "responses": {
                     "200": {
@@ -531,7 +531,7 @@
                     }
                 }],
 
-                "summary": "Update Product",
+                "summary": "Update Ingredient",
                 "requestBody": {
                     "description": "Update Existing ingredient on Database",
                     "required": true,
@@ -585,6 +585,168 @@
                         "description": "NOT FOUND",
                         "schema": {
                             "$ref": "#/components/schemas/Ingredients"
+                        }
+                    }
+                }
+            }
+        },
+
+        "/production/recipes": {
+            "get": {
+                "tags": [
+                    "Get all recipes from API"
+                ],
+                "summary": "Get all recipes runs",
+                "responses": {
+                "200": {
+                    "description": "Successful operation",
+                    "schema": {
+                        "$ref": "#/components/schemas/Recipes"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Recipes"
+                        }
+                    }
+            }
+            },
+            "post": {
+                "tags": [
+                    "Add a recipe to API"
+                ],
+                "summary": "Add recipe",
+                "requestBody": {
+                    "description": "Post new recipe to database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Recipes"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    }
+                }
+            }
+            },
+
+        "/production/recipes/{id}": {
+            "get": {
+                "tags": [
+                    "Get recipe from API"
+                ],
+                "summary": "Get recipe",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "recipe id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update Recipe on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "recipe id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Recipe",
+                "requestBody": {
+                    "description": "Update Existing recipe on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Recipes"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete recipe on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "ingredient id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Recipe",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Recipes"
                         }
                     }
                 }

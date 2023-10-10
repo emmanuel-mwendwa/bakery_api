@@ -80,6 +80,26 @@
                         "type": "integer"
                     }
                 }
+            },
+            "Ingredients": {
+                "type": "object",
+                "properties": {
+                    "ingredient_id": {
+                        "type": "string"
+                    },
+                    "ingredient_name": {
+                        "type": "string"
+                    },
+                    "ingredient_quantity": {
+                        "type": "integer"
+                    },
+                    "ingredient_measurement": {
+                        "type": "string"
+                    },
+                    "ingredient_cost": {
+                        "type": "integer"
+                    }
+                }
             }
         }
     },
@@ -403,6 +423,168 @@
                         "description": "NOT FOUND",
                         "schema": {
                             "$ref": "#/components/schemas/Runs"
+                        }
+                    }
+                }
+            }
+        },
+
+        "/production/ingredients": {
+            "get": {
+                "tags": [
+                    "Get all ingredients from API"
+                ],
+                "summary": "Get all ingredients runs",
+                "responses": {
+                "200": {
+                    "description": "Successful operation",
+                    "schema": {
+                        "$ref": "#/components/schemas/Ingredients"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Ingredients"
+                        }
+                    }
+            }
+            },
+            "post": {
+                "tags": [
+                    "Add an ingredient to API"
+                ],
+                "summary": "Add ingredient",
+                "requestBody": {
+                    "description": "Post new ingredient to database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Ingredients"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    }
+                }
+            }
+            },
+
+        "/production/ingredients/{id}": {
+            "get": {
+                "tags": [
+                    "Get ingredient from API"
+                ],
+                "summary": "Get Ingredient",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "ingredient id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update Ingredient on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "ingredient id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Product",
+                "requestBody": {
+                    "description": "Update Existing ingredient on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Ingredients"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete ingredient on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "ingredient id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Product",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ingredients"
                         }
                     }
                 }

@@ -101,6 +101,20 @@
                     }
                 }
             },
+            "Recipes": {
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "yield_amount": {
+                        "type": "integer"
+                    }
+                }
+            },
             "RecipeDetails": {
                 "type": "object",
                 "properties": {

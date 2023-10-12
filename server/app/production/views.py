@@ -66,19 +66,22 @@ class ProductionRunsRoutes:
     @production.post('/productionruns')
     def new_run():
         data = request.get_json()
-        if request.method == "POST":
-            product = Product.query.get(data.get("product_id"))
-            if not product:
-                return jsonify({"message": "Product not found!"})
-            else:
-                new_run = ProductionRuns(
-                    product_id = data.get("product_id"),
-                    flour_kneaded = data.get("flour_kneaded"),
-                    oil_used = data.get("oil_used"),
-                    packets_produced = data.get("packets_produced")
-                )
-                db.session.add(new_run)
-                db.session.commit()
+        
+        product = Product.query.get(data.get("product_id"))
+        if not product:
+            return jsonify({"message": "Product not found!"})
+        
+        new_run = ProductionRuns(
+            product_id = data.get("product_id"),
+            flour_kneaded = data.get("flour_kneaded"),
+            oil_used = data.get("oil_used"),
+            packets_produced = data.get("packets_produced")
+        )
+        db.session.add(new_run)
+        db.session.commit()
+
+        new_run.run_cost = new_run.runCost()
+
         return jsonify({"message": "Run added successfully"})
     
     @production.get('/productionruns')
@@ -190,6 +193,9 @@ class RecipeRoutes:
         if not product:
             return jsonify({"message": "Product not found"})
         
+        if Recipe.query.filter_by(id=product.id).first():
+            return jsonify({"message": f"{product.product_name} already has a recipe."})
+        
         recipe = Recipe(
             product_id = data.get("product_id"),
             description = data.get("description"),
@@ -197,6 +203,8 @@ class RecipeRoutes:
         )
         db.session.add(recipe)
         db.session.commit()
+
+        recipe.total_cost = recipe.recipeCost()
         
         return jsonify({"message": "Recipe added successfully"})
 
@@ -232,6 +240,7 @@ class RecipeRoutes:
         recipe.product_id = data.get("product_id")
         recipe.description = data.get("description")
         recipe.yield_amount = data.get("yield_amount")
+        recipe.total_cost = recipe.recipeCost()
 
         db.session.add(recipe)
         db.session.commit()
@@ -263,10 +272,11 @@ class RecipeDetails:
             ingredient_id = data.get("ingredient_id"),
             quantity = data.get("quantity"),
             unit_of_measurement = data.get("measurement"),
-            unit_cost = data.get("unit_cost")
         )
         db.session.add(new_detail)
         db.session.commit()
+
+        new_detail.unit_cost = new_detail.cost()
 
         return jsonify({"message": "Recipe details added successfully"})
     
@@ -280,9 +290,9 @@ class RecipeDetails:
     
     @production.get("/recipedetails/<int:id>")
     def view_recipeDetail(id):
-        recipe_detail = Recipe.query.get(id)
+        recipe_detail = RecipeIngredient.query.get(id)
         if not recipe_detail:
-            return jsonify({"message": "Recipe not found"})
+            return jsonify({"message": "Recipe Detail not found"})
         return jsonify(recipe_detail.to_json())
     
     @production.put("/recipedetails/<int:id>")
@@ -304,7 +314,7 @@ class RecipeDetails:
         recipe_detail.ingredient_id = data.get("ingredient_id")
         recipe_detail.quantity = data.get("quantity")
         recipe_detail.unit_of_measurement = data.get("measurement")
-        recipe_detail.unit_cost = data.get("unit_cost")
+        recipe_detail.unit_cost = recipe_detail.cost()
 
         db.session.add(recipe_detail)
         db.session.commit()

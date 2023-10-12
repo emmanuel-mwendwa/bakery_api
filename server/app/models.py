@@ -154,13 +154,32 @@ class ProductionRuns(db.Model):
     oil_used = db.Column(db.Float, nullable=False)
     packets_produced = db.Column(db.Float, nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    run_cost = db.Column(db.Float, default=0)
+    expected_profit = db.Column(db.Float, default=0)
+
+    def runCost(self):
+        try:
+            recipe_cost = self.product.product_recipe
+
+            for cost in recipe_cost:
+                self.run_cost = self.flour_kneaded * cost.total_cost
+
+            expected_sales = self.packets_produced * self.product.product_price
+            self.expected_profit = expected_sales - self.run_cost
+
+            db.session.commit()
+        except:
+            return {"message": "failed to update data"}
+        return {"message": "Success"}
 
     def to_json(self):
         json_productionRun = {
             "Product Name": self.product.product_name,
             "Flour Kneaded": self.flour_kneaded,
             "Oil Used": self.oil_used,
-            "Packets Produced": self.packets_produced
+            "Packets Produced": self.packets_produced,
+            "Run Cost": self.run_cost,
+            "Expected Profit": self.expected_profit
         }
 
         return json_productionRun
@@ -196,9 +215,20 @@ class Recipe(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
     description = db.Column(db.Text)
     yield_amount = db.Column(db.Integer, nullable=False)
-    total_cost = db.Column(db.Float)
+    total_cost = db.Column(db.Float, default=0)
 
     recipe_ingredients = db.relationship('RecipeIngredient', backref="recipe", lazy='dynamic')
+
+    def recipeCost(self):
+        
+        for ingredient in self.recipe_ingredients:
+            try:
+                self.total_cost += (ingredient.unit_cost)
+                db.session.commit()
+            except:
+                return {"message": "Error calculating recipe cost"}
+
+        return self.total_cost
 
     def to_json(self):
         ingredient_details = []
@@ -207,18 +237,15 @@ class Recipe(db.Model):
             ingredient_details.append({
                 "Ingredient Name": ingredient.recipe_association.ingredient_name,
                 "Quantity": ingredient.quantity,
-                "Unit of Measurement": ingredient.unit_of_measurement
+                "Unit of Measurement": ingredient.unit_of_measurement,
+                "Unit Cost": ingredient.unit_cost
             })
-
-            try:
-                self.total_cost = ingredient.unit_cost
-            except:
-                return {"Message": "Failed successfully"}
 
         json_recipe = {
             "Product Name": self.product_recipe.product_name,
             "Yield Amount": self.yield_amount,
             "Description": self.description,
+            "Recipe Cost": self.recipeCost(),
             "Recipe Details": ingredient_details
         }
 
@@ -231,13 +258,21 @@ class RecipeIngredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     recipe_id = db.Column(db.Integer, db.ForeignKey("recipes.id"))
     ingredient_id = db.Column(db.Integer, db.ForeignKey("ingredients.id"))
+    # Quantity of ingredient you input 
     quantity = db.Column(db.Float, nullable=False)
+    # 1kg of flour costs 100, 1 litre of water costs 20
     unit_of_measurement = db.Column(db.String(12))
-    unit_cost = db.Column(db.Float, nullable=False)
+    # unit cost of 1kg of flour or 1 litre of water
+    unit_cost = db.Column(db.Float, nullable=False, default=0)
 
+    
     def cost(self):
-        self.unit_cost = self.recipe_association * self.quantity
-        return self.cost
+        try:
+            self.unit_cost = self.recipe_association.ingredient_cost * self.quantity
+            db.session.commit()
+        except:
+            return {"message": "Failed to update unit cost"}
+        return self.unit_cost
 
     def to_json(self):
         json_recipeIngredient = {
@@ -245,7 +280,7 @@ class RecipeIngredient(db.Model):
             "Ingredient Name": self.recipe_association.ingredient_name,
             "Quantity": self.quantity,
             "Unit of measurement": self.unit_of_measurement,
-            "Unit Cost": self.unit_cost
+            "Unit Cost": self.cost()
         }
 
         return json_recipeIngredient

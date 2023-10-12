@@ -10,8 +10,10 @@ class RoutesRoutes:
     def new_route():
         data = request.get_json()
         sales_agent = User.query.get(data.get("sales_associate_id"))
+
         if not sales_agent:
             return jsonify({"message": "Sales Agent not found"})
+        
         new_route = Route(
             route_name = data.get("route_name"),
             sales_associate_id = data.get("sales_associate_id")
@@ -19,6 +21,7 @@ class RoutesRoutes:
 
         db.session.add(new_route)
         db.session.commit()
+
         return jsonify({"message": [
             {"data": "Route created successfully"},
             {"route": new_route.to_json()}
@@ -67,6 +70,7 @@ class RoutesRoutes:
     @sales.delete("/routes/<int:id>")
     def delete_route(id):
         route = Route.query.get(id)
+        
         if not route:
             return jsonify({"message": "Route not found"})
         

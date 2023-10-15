@@ -927,7 +927,7 @@
                     }
                 }],
 
-                "summary": "Update Product",
+                "summary": "Update Recipe Detail",
                 "requestBody": {
                     "description": "Update Existing Recipe Detail on Database",
                     "required": true,
@@ -981,6 +981,328 @@
                         "description": "NOT FOUND",
                         "schema": {
                             "$ref": "#/components/schemas/RecipeDetails"
+                        }
+                    }
+                }
+            }
+        },
+        "/sales/routes": {
+            "get": {
+                "tags": [
+                    "Get all routes from API"
+                ],
+                "summary": "Get all routes",
+                "responses": {
+                "200": {
+                    "description": "Successful operation",
+                    "schema": {
+                        "$ref": "#/components/schemas/Route"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Route"
+                        }
+                    }
+            }
+            },
+            "post": {
+                "tags": [
+                    "Add a route to API"
+                ],
+                "summary": "Add route",
+                "requestBody": {
+                    "description": "Post new route to database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Route"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    }
+                }
+            }
+            },
+
+        "/sales/routes/{id}": {
+            "get": {
+                "tags": [
+                    "Get route from API"
+                ],
+                "summary": "Get Route",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "route id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update route on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "recipe detail id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Route",
+                "requestBody": {
+                    "description": "Update Existing Route on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Route"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete route on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "recipe detail id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Route",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Route"
+                        }
+                    }
+                }
+            }
+        },
+        "/sales/customers": {
+            "get": {
+                "tags": [
+                    "Get all customers from API"
+                ],
+                "summary": "Get all customers ",
+                "responses": {
+                "200": {
+                    "description": "Successful operation",
+                    "schema": {
+                        "$ref": "#/components/schemas/Customer"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Customer"
+                        }
+                    }
+            }
+            },
+            "post": {
+                "tags": [
+                    "Add a customer to API"
+                ],
+                "summary": "Add customer",
+                "requestBody": {
+                    "description": "Post new customer to database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    }
+                }
+            }
+            },
+
+        "/sales/customers/{id}": {
+            "get": {
+                "tags": [
+                    "Get customer from API"
+                ],
+                "summary": "Get customer",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "customer id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update customer on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "customer id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Customer",
+                "requestBody": {
+                    "description": "Update Existing Customer on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete customer on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "customer id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Customer",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Customer"
                         }
                     }
                 }

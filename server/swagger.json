@@ -46,24 +46,6 @@
                     }
                 }
             },
-
-            "update": {
-                "type": "object",
-                "properties": {
-                    "product_id": {
-                        "type": "string"
-                    },
-                    "product_name": {
-                        "type": "string"
-                    },
-                    "product_price": {
-                        "type": "integer"
-                    },
-                    "product_description": {
-                        "type": "string"
-                    }
-                }
-            },
             "Runs": {
                 "type": "object",
                 "properties": {
@@ -131,6 +113,62 @@
                         "type": "string"
                     },
                     "unit_cost": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Route": {
+                "type": "object",
+                "properties": {
+                    "route_name": {
+                        "type": "string"
+                    },
+                    "sales_agent": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Customer": {
+                "type": "object",
+                "properties": {
+                    "customer_name": {
+                        "type": "string"
+                    },
+                    "customer_email": {
+                        "type": "string"
+                    },
+                    "customer_phone": {
+                        "type": "integer"
+                    },
+                    "customer_agent_name": {
+                        "type": "string"
+                    },
+                    "route_id": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Dispatch": {
+                "type": "object",
+                "properties": {
+                    "route_id": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "DispatchDetails": {
+                "type": "object",
+                "properties": {
+                    "dispatch_id": {
+                        "type": "integer"
+                    },
+                    "product_id": {
+                        "type": "integer"
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    },
+                    "returns": {
                         "type": "integer"
                     }
                 }
@@ -248,7 +286,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/update"
+                                "$ref": "#/components/schemas/Products"
                             }
                         }
                     }

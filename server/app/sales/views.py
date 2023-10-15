@@ -9,14 +9,14 @@ class RoutesRoutes:
     @sales.post("/routes")
     def new_route():
         data = request.get_json()
-        sales_agent = User.query.get(data.get("sales_associate_id"))
+        sales_agent = User.query.get(data.get("sales_agent"))
 
         if not sales_agent:
             return jsonify({"message": "Sales Agent not found"})
         
         new_route = Route(
             route_name = data.get("route_name"),
-            sales_associate_id = data.get("sales_associate_id")
+            sales_associate_id = data.get("sales_agent")
         )
 
         db.session.add(new_route)

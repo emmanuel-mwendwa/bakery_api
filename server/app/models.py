@@ -136,11 +136,23 @@ class Product(db.Model):
     product_dispatch = db.relationship('DispatchDetails', backref='product_dispatch', lazy='dynamic')
     
     def to_json(self):
+        runs = []
+
+        for run in self.production_runs:
+            runs.append({
+                "Flour Kneaded": run.flour_kneaded,
+                "Oil Used": run.oil_used,
+                "Packets Produced": run.packets_produced,
+                "Run Cost": run.run_cost,
+                "Expected Profit": run.expected_profit
+            })
+        
         json_product = {
             "Product ID": self.product_id,
             "Product Name": self.product_name,
             "Product Price": self.product_price,
             "Product Description": self.product_description,
+            "Production Runs": runs
         }
 
         return json_product

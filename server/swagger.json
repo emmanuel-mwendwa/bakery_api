@@ -1307,6 +1307,167 @@
                     }
                 }
             }
+        },
+        "/sales/dispatches": {
+            "get": {
+                "tags": [
+                    "Get all dispatches from API"
+                ],
+                "summary": "Get all dispatches ",
+                "responses": {
+                "200": {
+                    "description": "Successful operation",
+                    "schema": {
+                        "$ref": "#/components/schemas/Dispatch"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                        "$ref": "#/components/schemas/Dispatch"
+                        }
+                    }
+            }
+            },
+            "post": {
+                "tags": [
+                    "Add a Dispatch to API"
+                ],
+                "summary": "Add dispatch",
+                "requestBody": {
+                    "description": "Post new dispatch to database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Dispatch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    }
+                }
+            }
+            },
+
+        "/sales/dispatches/{id}": {
+            "get": {
+                "tags": [
+                    "Get dispatch from API"
+                ],
+                "summary": "Get dispatch",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "dispatch id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "Update dispatch on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "customer id to update",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+
+                "summary": "Update Dispatch",
+                "requestBody": {
+                    "description": "Update Existing Dispatch on Database",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Dispatch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    }
+                } 
+            },
+            "delete": {
+                "tags": [
+                    "Delete dispatch on API"
+                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "dispatch id to delete",
+                    "required": true,
+                    "type": "integer",
+                    "schema": {
+                        "$ref": "#/components/schemas/Id"
+                    }
+                }],
+                "summary": "Delete Dispatch",
+
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
+                        "schema": {
+                            "$ref": "#/components/schemas/Dispatch"
+                        }
+                    }
+                }
+            }
         }
     }
 }

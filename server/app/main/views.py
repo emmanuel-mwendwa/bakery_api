@@ -1,6 +1,6 @@
 from . import main
 from .. import db
-from ..models import User
+from ..models import User, Role
 from flask import request, jsonify
 
 
@@ -12,8 +12,9 @@ class UserRoutes:
             name = data.get("name"),
             username = data.get("username"),
             email = data.get("email"),
-            password_hash = data.get("password"),
-            phone_no = data.get("phone_no")
+            password = data.get("password"),
+            phone_no = data.get("phone_no"),
+            role_id = 1
         )
 
         db.session.add(new_user)

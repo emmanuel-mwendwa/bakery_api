@@ -2,6 +2,7 @@ from flask import jsonify, request
 from . import production
 from .. import db
 from ..models import Product, ProductionRuns, Ingredient, Recipe, RecipeIngredient
+from sqlalchemy.exc import IntegrityError
 
 @production.route("/")
 def production_home():
@@ -43,12 +44,16 @@ class ProductsRoutes:
         product = Product.query.get(id)
         if not product:
             return jsonify({"message": "Product not found"}), 404
-        product.product_id = data.get("product_id")
-        product.product_name = data.get("product_name")
-        product.product_price = data.get("product_price")
-        product.product_description = data.get("product_description")
-        db.session.add(product)
-        db.session.commit()
+        
+        try:
+            product.product_id = data.get("product_id")
+            product.product_name = data.get("product_name")
+            product.product_price = data.get("product_price")
+            product.product_description = data.get("product_description")
+            db.session.add(product)
+            db.session.commit()
+        except IntegrityError:
+            return jsonify({"message": "process execution failed"})
         return jsonify({"message": "product updated successfully"})
     
     @production.delete('/products/<int:id>')

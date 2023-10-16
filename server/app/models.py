@@ -1,5 +1,6 @@
 from . import db
 from flask import current_app, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Permission:
     VIEW_PRODUCTS = 1
@@ -109,6 +110,17 @@ class User(db.Model):
     
     def is_administrator(self):
         return self.can(Permission.ADMINISTRATOR)
+    
+    @property
+    def password(self):
+        raise AttributeError('What are you trying to do.')
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def to_json(self):
         json_user = {
@@ -120,7 +132,6 @@ class User(db.Model):
         }
 
         return json_user
-
 
 class Product(db.Model):
     __tablename__ = "products"

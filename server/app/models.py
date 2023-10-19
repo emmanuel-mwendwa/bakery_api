@@ -28,7 +28,7 @@ class Role(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     # permissions allowed for different users
     permissions = db.Column(db.Integer)
-    # users = db.relationship('User', backref='role', lazy='dynamic')
+    users = db.relationship('User', backref='role', lazy='dynamic')
 
     # set the value of permissions to 0 if no initial value is given
     def __init__(self, **kwargs):
@@ -94,25 +94,24 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     phone_no = db.Column(db.String(13))
     confirmed = db.Column(db.Boolean, default=False)
-    # role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))
     
     routes = db.relationship("Route", backref="sales_agent", lazy="dynamic")
 
     # assigning roles to users
-    # def __init__(self, **kwargs):
-    #     super(User, self).__init__(**kwargs)
-    #     if self.role is None:
-    #         if self.email == current_app.config['APP_ADMIN']:
-    #             self.role = Role.query.filter_by(name='Administrator').first()
-    #         if self.role is None:
-    #             self.role = Role.query.filter_by(default=True).first()
+    def assign_role(self):
+        if self.role is None:
+            if self.email == current_app.config['APP_ADMIN']:
+                self.role = Role.query.filter_by(name='Administrator').first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
 
     # role verification
-    # def can(self, perm):
-    #     return self.role is not None and self.role.has_permission(perm)
+    def can(self, perm):
+        return self.role is not None and self.role.has_permission(perm)
     
-    # def is_administrator(self):
-    #     return self.can(Permission.ADMINISTRATOR)
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTRATOR)
     
     @property
     def password(self):
@@ -125,7 +124,7 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-    def generate_auth_token(self, email, expiration=600):
+    def generate_auth_token(self, expiration=600):
         auth_token = jwt.encode({
             "user": self.id,
             "email": self.email,
@@ -136,7 +135,8 @@ class User(db.Model):
         )
         return auth_token
     
-    def verify_auth_token(self, token):
+    @staticmethod
+    def verify_auth_token(token):
         try:
             data = jwt.decode(
                 token,
@@ -146,7 +146,7 @@ class User(db.Model):
             )
         except:
             return False
-        return User.query.get(data["id"])
+        return User.query.get(data["user"])
 
     def to_json(self):
         json_user = {
@@ -154,7 +154,7 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "phone_no": self.phone_no,
-            # "role": self.role.name
+            "role": self.role_id
         }
 
         return json_user

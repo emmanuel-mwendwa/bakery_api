@@ -2,7 +2,7 @@ from . import main
 from .. import db
 from ..models import User, Role
 from flask import request, jsonify
-
+from app.auth.views import token_auth
 
 class UserRoutes:
     @main.post("/users")
@@ -14,8 +14,9 @@ class UserRoutes:
             email = data.get("email"),
             password = data.get("password"),
             phone_no = data.get("phone_no"),
-            role_id = 1
         )
+
+        new_user.assign_role()
 
         db.session.add(new_user)
         db.session.commit()
@@ -26,6 +27,7 @@ class UserRoutes:
         ]})
     
     @main.get("/users")
+    @token_auth.login_required
     def view_users():
         users = User.query.all()
         users_list = []

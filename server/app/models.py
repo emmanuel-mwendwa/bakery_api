@@ -99,7 +99,8 @@ class User(db.Model):
     routes = db.relationship("Route", backref="sales_agent", lazy="dynamic")
 
     # assigning roles to users
-    def assign_role(self):
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
         if self.role is None:
             if self.email == current_app.config['APP_ADMIN']:
                 self.role = Role.query.filter_by(name='Administrator').first()
@@ -154,7 +155,7 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "phone_no": self.phone_no,
-            "role": self.role_id
+            "role": self.role.name
         }
 
         return json_user

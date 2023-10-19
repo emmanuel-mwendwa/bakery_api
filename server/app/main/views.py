@@ -15,9 +15,7 @@ class UserRoutes:
             password = data.get("password"),
             phone_no = data.get("phone_no"),
         )
-
-        new_user.assign_role()
-
+        
         db.session.add(new_user)
         db.session.commit()
 

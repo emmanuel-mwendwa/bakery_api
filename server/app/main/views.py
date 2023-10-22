@@ -1,11 +1,14 @@
 from . import main
 from .. import db
-from ..models import User, Role
+from ..models import User, Role, Permission
+from ..decorators import permission_required
 from flask import request, jsonify
 from app.auth.views import token_auth
 
 class UserRoutes:
     @main.post("/users")
+    @token_auth.login_required
+    @permission_required(Permission.MANAGER)
     def users():
         data = request.get_json()
         new_user = User(
@@ -35,6 +38,7 @@ class UserRoutes:
         return jsonify({"Users": users_list})
     
     @main.get("/users/<int:id>")
+    @token_auth.login_required
     def view_user(id):
         user = User.query.get(id)
         if not user:
@@ -42,6 +46,7 @@ class UserRoutes:
         return jsonify(user.to_json())
     
     @main.put("/users/<int:id>")
+    @token_auth.login_required
     def update_user(id):
         data = request.get_json()
         user = User.query.get(id)
@@ -60,6 +65,7 @@ class UserRoutes:
         ]})
     
     @main.delete("/users/<int:id>")
+    @token_auth.login_required
     def delete_user(id):
         user = User.query.get(id)
         if not user:

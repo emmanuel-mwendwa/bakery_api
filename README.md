@@ -8,3 +8,7 @@ It's intent is to help keep track of:
   - Inventory
 
 It is meant to help analyze the state of the business and improve on it
+
+
+It solves the need for hard storage of data which can be tampered with, lost or damaged over time. 
+It solves security needs and ensures a tracking system can be put in place.
